@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--
+对Userdao接口的具体实现的配置,mapper是根标签，相当于表菜谱，
+namespace的作用在于辨别是实现哪个接口,
+在mapper里面实现Userdao中的函数
+-->
+
+
+
+<mapper namespace="suyan.dao.Userdao">
+
+    <!-- resultMap可以有效解决列名和属性名不一致的问题，比起别名后期工作量要小-->
+<!--    <resultMap type="com.itheima.domain.User" id="userMap"> <id column="id" property="userId"/>-->
+<!--        <result column="username" property="userName"/>-->
+<!--        <result column="sex" property="userSex"/>-->
+<!--        <result column="address" property="userAddress"/>-->
+<!--        <result column="birthday" property="userBirthday"/>-->
+<!--    </resultMap>-->
+    <!-- 定义SQL语句块-->
+    <sql id="selectuser">
+        select * from user
+    </sql>
+
+    <!-- 由于主配置文件中typeAliases注册过了，这里的参数就不必写全限定类名-->
+    <insert id="saveUser" parameterType="User">
+        <!--
+        jdbc: insert into user(username,birthday,sex,address) values(?,?,?,?)
+        ?用#{}替代，调用参数user的get方法填上 ?占位符（看user炸开后字段有啥，直接拿来用）
+        -->
+        insert into user(username,birthday,sex,address) values(#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!-- 实现Userdao接口中定义的函数,id是函数名,resultType是返回结果类型，要求全限定类名-->
+
+    <!-- 实现findAll函数-->
+    <select id="findAll" resultType="suyan.domain.User">
+        <!--在里面写SQL语句，先想着jdbc的SQL语句怎么写，再照着改成mybatis的形式,包括占位符#{}和ognl的自动get-->
+        select * from user
+    </select>
+
+    <!--实现findById函数 -->
+    <select id="findById" resultType="User" parameterType="integer">
+        <!--
+        JDBC:select * from user where id = ?
+        占位符? = #{} ,里面要赋值值自动调用参数的get方法,但是因为参数是基本数据类型，所有直接得到他自己
+        -->
+        select * from user where id=#{id}
+    </select>
+
+
+    <!-- 实现findByCondition函数-->
+    <select id="findByCondition" resultType="suyan.domain.User" parameterType="User">
+        <!--select * from user where 1=1 and (列username=?)-->
+        select * from user
+        <where>
+            <if test="username!=null">
+                and username=#{username}
+            </if>
+            <if test="sex!=null">
+                and sex=#{sex}
+            </if>
+        </where>
+    </select>
+
+    <!-- 实现select * from user where 1=1 and id in (?,?,?)-->
+    <!-- 传入的是QueryVo类型，炸开后就剩一个ids，可直接用-->
+    <select id="findByIds" resultType="suyan.domain.User" parameterType="QueryVo">
+        <!--引用SQL语句-->
+        <include refid="selectuser"></include>
+        <where>
+            <foreach collection="ids" item="id" separator="," open="and id in(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+
+</mapper>

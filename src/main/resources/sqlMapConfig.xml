@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 主配置文件，相当于点单器的信息environments + 菜谱的索引mappers -->
+
+<configuration>
+    <!--要求配置文件必须在类目录下,resources下? -->
+    <properties resource="jdbcConfig.properties">
+
+    </properties>
+    <!-- 把suyan.domain下面的类都注册，后面就不必使用全限定类名了-->
+    <typeAliases>
+        <package name="suyan.domain"/>
+    </typeAliases>
+    <!--点单机（通往数据库）的信息-->
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"></transactionManager>
+            <!-- 这是数据库连接池的信息，在其中配置四个必要的配置信息-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--菜谱的索引,mybatis的映射位置-->
+    <mappers>
+<!--        <mapper resource="suyan/dao/Userdao.xml"/>-->
+        <!-- 把这个包下面的xml文件全部注册，这样不用写resource或class了-->
+        <package name="suyan.dao"/>
+    </mappers>
+
+
+</configuration>
