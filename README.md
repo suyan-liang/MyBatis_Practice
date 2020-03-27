@@ -1,0 +1,3 @@
+# MyBatis_Practice
+Mybatis的学习代码
+里面的log4j好像有什么问题，但是用于本地测试还是行的
